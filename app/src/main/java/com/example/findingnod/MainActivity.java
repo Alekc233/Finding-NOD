@@ -6,13 +6,14 @@ import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
 import android.content.Intent;
+import java.util.LinkedList;
 
 public class MainActivity extends AppCompatActivity {
   private static final String TAG = "logs";
   public static final String EXTRA_MESSAGE = "com.example.findingnod.MESSAGE";
   private static final String KEY_NUM1 = "N1";
   private static final String KEY_NUM2 = "N2";
-  int n1,n2;
+  int n1,n2,nod;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -23,7 +24,7 @@ public class MainActivity extends AppCompatActivity {
   @Override
   protected void onSaveInstanceState(Bundle outState) {
     super.onSaveInstanceState(outState);
-    Log.d(TAG, "Screen has been rotated");
+    Log.d(TAG, "Values saved");
     Log.d(TAG, "a = "+ n1);
     Log.d(TAG, "b = " + n2);
     outState.putInt(KEY_NUM1, n1);
@@ -36,32 +37,43 @@ public class MainActivity extends AppCompatActivity {
     EditText num1 = (EditText)findViewById(R.id.editText);
     EditText num2 = (EditText)findViewById(R.id.editText2);
 
-    int res;
+    findNOD otvet = new findNOD();
 
     if( num1.getText().toString().equals("") || num2.getText().toString().equals("") ) {
-      Log.d(TAG, "there is no data entered");
-      res = 0;
+      Log.d(TAG, "there is no value entered");
+      intent.putExtra(EXTRA_MESSAGE, "NOD is " + 0);
+      startActivity(intent);
     }
       else {
       n1 = Integer.parseInt(num1.getText().toString());
       n2 = Integer.parseInt(num2.getText().toString());
       Log.d(TAG, "NOD of " + n1 + " " + n2);
-      int a = n1, b = n2;
-      while (b != 0) {
-        int c = a % b;
-        a = b;
-        b = c;
+      nod = otvet.res(n1,n2);
+      Log.d(TAG, "NOD is " + nod);
+      intent.putExtra(EXTRA_MESSAGE,"NOD is " + nod);
+      startActivity(intent);
       }
-      res = a;
-      Log.d(TAG, "NOD is "+ res);
+      otvet.showMeList();
     }
 
-
-
-
-    String message = Integer.toString(res);
-    intent.putExtra(EXTRA_MESSAGE, message);
-    startActivity(intent);
-
+    public class findNOD {
+      private LinkedList <Integer> ListOfNOD = new LinkedList<Integer>();
+      public int res (int n1,int n2){
+          ListOfNOD.add(n1);
+          ListOfNOD.add(n2);
+          while (n2 != 0){
+              int c = n1 % n2;
+              n1 = n2;
+              n2 = c;
+          }
+          ListOfNOD.add(n1);
+          return n1;
+      }
+        public void showMeList(){
+            System.out.println(ListOfNOD);
+        }
+        public void clearMyList(){
+            ListOfNOD.clear();
+        }
   }
 }
